@@ -1,24 +1,16 @@
 import React from 'react';
-import { FaWhatsapp } from 'react-icons/fa';
-import { motion } from 'framer-motion';
 
-const WhatsAppButton = () => {
-  const whatsappNumber = '+91XXXXXXXXXX'; // Replace with actual number
-  const whatsappLink = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`;
-
+const WhatsAppButton = ({ phoneNumber }) => {
   return (
-    <motion.a
-      href={whatsappLink}
+    <a
+      href={`https://wa.me/${phoneNumber.replace(/[^0-9]/g, '')}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-8 right-8 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all z-40"
-      whileHover={{ scale: 1.1, rotate: 10 }}
-      whileTap={{ scale: 0.9 }}
-      animate={{ y: [0, -10, 0] }}
-      transition={{ duration: 2, repeat: Infinity }}
+      className="fixed bottom-8 right-8 bg-green-500 hover:bg-green-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-40"
+      title="Chat on WhatsApp"
     >
-      <FaWhatsapp size={32} />
-    </motion.a>
+      💬
+    </a>
   );
 };
 

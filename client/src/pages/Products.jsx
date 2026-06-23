@@ -1,25 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { getProducts, getCategories } from '../api';
+import axios from 'axios';
+import ProductCard from '../components/ProductCard';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [productsRes, categoriesRes] = await Promise.all([
-          getProducts(),
-          getCategories(),
-        ]);
-        setProducts(productsRes.data);
-        setCategories(categoriesRes.data);
+        const productsResponse = await axios.get(`${API_URL}/products`);
+        setProducts(productsResponse.data);
+        
+        // Extract unique categories
+        const uniqueCategories = [...new Set(productsResponse.data.map(p => p.category))].filter(Boolean);
+        setCategories(uniqueCategories);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching products:', error);
       } finally {
         setLoading(false);
       }
@@ -27,85 +29,73 @@ const Products = () => {
     fetchData();
   }, []);
 
-  const handleFilter = async (categoryId = '', searchQuery = '') => {
-    try {
-      const filters = {};
-      if (categoryId) filters.category = categoryId;
-      if (searchQuery) filters.search = searchQuery;
-      const res = await getProducts(filters);
-      setProducts(res.data);
-    } catch (error) {
-      console.error('Error filtering products:', error);
-    }
-  };
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = !selectedCategory || product.category === selectedCategory;
+    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch && product.isVisible;
+  });
 
   return (
-    <div className="min-h-screen bg-white py-12 px-4">
-      <div className="max-w-6xl mx-auto">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-4xl font-bold text-primary mb-8 text-center"
-        >
-          Our Products
-        </motion.h1>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-primary text-white py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-4xl md:text-5xl font-bold mb-2">Our Products</h1>
+          <p className="text-lg text-yellow-200">Browse our collection of professional photo products</p>
+        </div>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-accent p-6 rounded-lg mb-8 shadow-md">
-          <div className="grid md:grid-cols-2 gap-4">
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                handleFilter(selectedCategory, e.target.value);
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <select
-              value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value);
-                handleFilter(e.target.value, search);
-              }}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+      {/* Filters */}
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Search */}
+            <div>
+              <label className="block text-primary font-semibold mb-2">Search Products</label>
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+              />
+            </div>
+
+            {/* Category Filter */}
+            <div>
+              <label className="block text-primary font-semibold mb-2">Category</label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Results Count */}
+            <div className="flex items-end">
+              <div className="text-gray-600">
+                Showing <span className="font-bold text-primary">{filteredProducts.length}</span> products
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Products Grid */}
         {loading ? (
-          <div className="text-center py-12">Loading...</div>
+          <div className="text-center py-12">Loading products...</div>
+        ) : filteredProducts.length === 0 ? (
+          <div className="text-center py-12 text-gray-600">
+            <p className="text-xl">No products found. Try adjusting your filters.</p>
+          </div>
         ) : (
-          <div className="grid md:grid-cols-3 gap-8">
-            {products.map((product, idx) => (
-              <motion.div
-                key={product._id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="bg-white rounded-lg overflow-hidden shadow-lg hover-lift"
-              >
-                <div className="h-64 bg-gray-200 flex items-center justify-center text-gray-400">
-                  📦 Product Image
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-primary mb-2">{product.name}</h3>
-                  <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-secondary">₹{product.price}</span>
-                    <button className="btn btn-primary text-sm">View Details</button>
-                  </div>
-                </div>
-              </motion.div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         )}

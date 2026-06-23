@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,28 +10,17 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica
-    Neue', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-/* Smooth Scrolling */
 html {
   scroll-behavior: smooth;
 }
 
-/* Custom Scrollbar */
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f8f8f8;
+}
+
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -37,32 +28,50 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #8B1538;
-  border-radius: 4px;
+  background: #800000;
+  border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #D4AF37;
-}
-
-/* Button Styles */
-.btn {
-  @apply px-6 py-2 rounded-lg font-semibold transition-all duration-300 ease-out;
+  background: #FFD700;
 }
 
 .btn-primary {
-  @apply bg-primary text-white hover:bg-opacity-90 hover:shadow-lg;
+  @apply bg-[#800000] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#600000] transition-all duration-300 ease-out;
 }
 
 .btn-secondary {
-  @apply bg-secondary text-primary hover:bg-opacity-90 hover:shadow-lg;
+  @apply bg-[#FFD700] text-[#800000] px-6 py-3 rounded-lg font-semibold hover:bg-[#FFC700] transition-all duration-300 ease-out;
 }
 
 .btn-outline {
-  @apply border-2 border-primary text-primary hover:bg-primary hover:text-white;
+  @apply border-2 border-[#800000] text-[#800000] px-6 py-3 rounded-lg font-semibold hover:bg-[#800000] hover:text-white transition-all duration-300;
 }
 
-/* Smooth Hover Effects */
-.hover-lift {
-  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-2;
+}
+
+.text-primary {
+  @apply text-[#800000];
+}
+
+.text-secondary {
+  @apply text-[#FFD700];
+}
+
+.bg-primary {
+  @apply bg-[#800000];
+}
+
+.bg-secondary {
+  @apply bg-[#FFD700];
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, #800000 0%, #400000 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
 }

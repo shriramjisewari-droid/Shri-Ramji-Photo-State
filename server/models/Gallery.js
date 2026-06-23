@@ -5,13 +5,12 @@ const gallerySchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  publicId: String,
   title: {
     type: String,
     required: true
   },
-  tags: [String],
-  uploadedAt: {
+  tag: String,
+  createdAt: {
     type: Date,
     default: Date.now
   }
